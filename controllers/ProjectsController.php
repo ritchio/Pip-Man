@@ -1,7 +1,7 @@
 <?php
 include_once("../services/ProjectsService.php");
 include_once("../system/Controller.php");
-include_once("../dtos/ProjectTaskDto.php");
+include_once("../data/dtos/ProjectTaskDto.php");
 class ProjectsController extends Controller{
     private $projectsService;    
     public function __construct(){

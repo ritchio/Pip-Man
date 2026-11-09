@@ -1,6 +1,6 @@
 <?php
 include_once "../system/DBConfig.php";
-include_once "../dtos/CalendarDto.php";
+include_once "../data/dtos/CalendarDto.php";
 class CalendarService {
     private $pdo;
     public function __construct() {

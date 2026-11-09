@@ -1,9 +1,9 @@
 <?php
 include_once "../system/DBConfig.php";
-// include_once "../dtos/GenericResponseDto.php";
-include_once "../dtos/ProjectDto.php";
-include_once "../dtos/ProjectEpicDto.php";
-include_once "../dtos/ProjectTaskDto.php";
+// include_once "../data/dtos/GenericResponseDto.php";
+include_once "../data/dtos/ProjectDto.php";
+include_once "../data/dtos/ProjectEpicDto.php";
+include_once "../data/dtos/ProjectTaskDto.php";
 class ProjectsService {
     private $pdo;
     public function __construct() {

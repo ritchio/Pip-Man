@@ -1,7 +1,7 @@
 <?php
 include_once ("../services/CalendarService.php");
 include_once ("../system/Controller.php");
-include_once ("../dtos/CalendarDto.php");
+include_once ("../data/dtos/CalendarDto.php");
 
 class CalendarController extends Controller {
     private $calendarService;
