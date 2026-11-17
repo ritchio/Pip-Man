@@ -1,17 +1,76 @@
 <?php
 require_once __DIR__ . '/../system/DBConfig.php';
 require_once __DIR__ . '/../data/entities/User.php';
+require_once __DIR__ . '/../data/models/UserModel.php';
 class UserService {
     private $pdo;
+    private $userModel;
 
     public function __construct() {
         $this->pdo = DBConfig::getConnection();
+        $this->userModel = new UserModel($this->pdo);
     }
 
     public function registerUser(string $username, string $password): bool {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->pdo->prepare("INSERT INTO user (username, password) VALUES (:username, :password)");
-        return $stmt->execute(['username' => $username, 'password' => $hashedPassword]);
+        $this->validateCredentials($username, $password);
+
+        return $this->userModel->create([
+            "username" => $username,
+            "password" => password_hash($password, PASSWORD_DEFAULT)
+        ]) > 0;
+    }
+
+    public function getList() {
+        return $this->userModel->getList();
+    }
+
+    public function getById(int $id) {
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Invalid user ID.");
+        }
+
+        return $this->userModel->getById($id);
+    }
+
+    public function create(array $data) {
+        $username = $this->validateUsername($data["username"] ?? null);
+        $password = $this->validatePassword($data["password"] ?? null);
+        $this->ensureUsernameAvailable($username);
+
+        return $this->userModel->create([
+            "username" => $username,
+            "password" => password_hash($password, PASSWORD_DEFAULT)
+        ]);
+    }
+
+    public function update(int $id, array $data) {
+        if ($id <= 0 || $this->userModel->getById($id) === null) {
+            throw new InvalidArgumentException("User not found.");
+        }
+
+        $username = $this->validateUsername($data["username"] ?? null);
+        $existingUser = $this->userModel->getByUsername($username);
+        if ($existingUser !== null && (int)$existingUser["id"] !== $id) {
+            throw new InvalidArgumentException("Username is already in use.");
+        }
+
+        $updateData = ["username" => $username];
+        if (isset($data["password"]) && $data["password"] !== "") {
+            $updateData["password"] = password_hash(
+                $this->validatePassword($data["password"]),
+                PASSWORD_DEFAULT
+            );
+        }
+
+        return $this->userModel->update($id, $updateData);
+    }
+
+    public function delete(int $id) {
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Invalid user ID.");
+        }
+
+        return $this->userModel->delete($id);
     }
 
     public function authenticateUser(string $username, string $password): int {
@@ -39,6 +98,33 @@ class UserService {
         }
 
         return null;
+    }
+
+    private function validateCredentials(string $username, string $password): void {
+        $this->validateUsername($username);
+        $this->validatePassword($password);
+    }
+
+    private function validateUsername($username): string {
+        if (!is_string($username) || trim($username) === "") {
+            throw new InvalidArgumentException("Username is required.");
+        }
+
+        return trim($username);
+    }
+
+    private function validatePassword($password): string {
+        if (!is_string($password) || $password === "") {
+            throw new InvalidArgumentException("Password is required.");
+        }
+
+        return $password;
+    }
+
+    private function ensureUsernameAvailable(string $username): void {
+        if ($this->userModel->getByUsername($username) !== null) {
+            throw new InvalidArgumentException("Username is already in use.");
+        }
     }
 
     public function getPermissionsForUser(string $user_id): array {
