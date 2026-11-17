@@ -8,6 +8,7 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>URL</th>
             <th>Restricted</th>
             <th>Actions</th>
         </tr>
@@ -18,6 +19,7 @@
                 <tr>
                     <td><?php echo htmlspecialchars($module['id']); ?></td>
                     <td><?php echo htmlspecialchars($module['name']); ?></td>
+                    <td><?php echo $module['url']; ?></td>
                     <td><?php echo ($module['restricted'] == 1) ? 'Yes' : 'No'; ?></td>
                     <td>
                         <a href="<?php echo $this->controller_url; ?>/edit/<?php echo $module['id']; ?>" target="content" class="button">Edit</a>

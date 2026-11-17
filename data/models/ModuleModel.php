@@ -31,15 +31,38 @@ class ModuleModel {
         }
     }
 
+    public function create(array $data) {
+        try {
+            $query = $this->pdo->prepare(
+                "INSERT INTO module (name, restricted, url, active, list_order) VALUES (:name, :restricted, :url, :active, :list_order)"
+            );
+            $query->execute([
+                ":name" => $data["name"],
+                ":restricted" => $data["restricted"],
+                ":url" => $data["url"],
+                ":active" => 1,
+                ":list_order" => 0
+            ]);
+
+
+            return $this->getById($this->pdo->lastInsertId());
+        } catch (Exception $e) {
+            throw new Exception("Error creating module: " . $e->getMessage());
+        }
+    }
+
     public function update(int $id, array $data) {
         try {
             $query = $this->pdo->prepare(
-                "UPDATE module SET name = :name, restricted = :restricted WHERE id = :id"
+                "UPDATE module SET name = :name, restricted = :restricted, url = :url, active = :active, list_order = :list_order WHERE id = :id"
             );
             $query->execute([
                 ":id" => $id,
                 ":name" => $data["name"],
-                ":restricted" => $data["restricted"]
+                ":restricted" => $data["restricted"],
+                ":url" => $data["url"],
+                ":active" => 1,
+                ":list_order" => 0
             ]);
 
             return true;
