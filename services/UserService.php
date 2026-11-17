@@ -58,7 +58,7 @@ class UserService {
         foreach ($result as $permission) {
 
             $permissions[$permission['name']]['actions'][] = $permission['action'];
-            if(!array_key_exists("url",$permissions[$permission['name']])){
+            if(!array_key_exists("name",$permissions[$permission['name']])){
                 $permissions[$permission['name']]['url'] = $permission['url'];
             }
         }

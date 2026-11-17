@@ -17,7 +17,7 @@ $urlParts = parse_url($requested);
 $pathParts = explode('/', $urlParts['path']);
 
 //we just accept 4 levels of path: component/action/id/extra
-$module = ucfirst($pathParts[0] ?? 'home'); // Default to 'home' module if not specified
+$module = $pathParts[0] ?? 'home'; // Default to 'home' module if not specified
 $action = $pathParts[1] ?? 'index';
 $id = $pathParts[2] ?? null;
 $extra = $pathParts[3] ?? null;
@@ -37,15 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 //in $_SESSION must have a list of allowed pages for the user, based on their role/permissions
 $permissions = $_SESSION['permissions'] ?? [];
-if (!array_key_exists($module, $permissions)) {
-    print_r($permissions);
+
+if (array_search($module, array_column($permissions, 'url'))===false) {
+//    print_r($permissions);
     echo '<div class="error">Access Denied: You do not have permission to access this page.</div>';
     exit;
 }
 
 //map to its path as class and method, for example:
 // module "projects" with action "edit" would map to ProjectsController->edit($id, $extra)
-$controllerClass = $module . 'Controller';
+$controllerClass = ucfirst($module) . 'Controller';
 
 try {
     if(!file_exists(str_replace('/public_html', '', __DIR__) . '/controllers/' . $controllerClass . '.php')) {

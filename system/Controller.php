@@ -1,7 +1,15 @@
 <?php
+
+
 //interface for controllers
 class Controller {
-    public function view(string $file_name = null , $data = null, $message = null, $success = null, $error = null){
+    private $controller_url;
+
+    public function __construct() {
+        $this->controller_url = '';
+    }
+
+    public function view(?string $file_name=null, $data = null, $message = null, $success = null, $error = null){
 
         $class_name = get_class($this);
         
@@ -17,6 +25,7 @@ class Controller {
         }
         // print_r($_SERVER);exit;
         $root_dir = dirname(__DIR__);
+        $this->controller_url = strtolower($dir_name);
         $view_path = $root_dir."/views/".$dir_name."/".$file_name;
 
         if(file_exists($view_path)){

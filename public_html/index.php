@@ -55,22 +55,30 @@ if(!isset($_SESSION['authenticated'])){
     <script src="js/site.js"></script>
 
 <script>
-        getContent({url:"home/index",target:"content"});
 
-        const toggleBtn = document.getElementById('toggleBtn');
-        const layoutWrapper = document.getElementById('layoutWrapper');
+    //redirect the user to the last url requested
+    const last_url = sessionStorage.getItem("last_url");
+     console.log(last_url);
+    if(typeof(last_url) !== 'undefined' && last_url != null){
+        let last_url_object = JSON.parse(last_url);
+        getContent({url:last_url_object.url,method:last_url_object.method,data:last_url_object.data,target:"content"});
+    }else{
+        getContent({url:"home/index",target:"content"});        
+    }
+    const toggleBtn = document.getElementById('toggleBtn');
+    const layoutWrapper = document.getElementById('layoutWrapper');
 
-        toggleBtn.addEventListener('click', () => {
+    toggleBtn.addEventListener('click', () => {
 
-            layoutWrapper.classList.toggle('collapsed');
-            
-            if(layoutWrapper.classList.contains('collapsed')) {
-                toggleBtn.innerText = '⏵';
-            } else {
-                toggleBtn.innerText = '⏴';
-            }
-        });
-    </script>
+        layoutWrapper.classList.toggle('collapsed');
+        
+        if(layoutWrapper.classList.contains('collapsed')) {
+            toggleBtn.innerText = '⏵';
+        } else {
+            toggleBtn.innerText = '⏴';
+        }
+    });
+</script>
 
 </html>
     <?php

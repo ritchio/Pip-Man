@@ -1,18 +1,6 @@
 var APIRequestCache = {};
 var urlExceptionList = ['#','logout.php'];
 
-window.onload = function(){
-
-    //redirect the user to the last url requested
-    const last_url = sessionStorage.getItem("last_url");
-     console.log(last_url);
-    if(typeof(last_url) !== 'undefined' && last_url != null){
-        let last_url_object = JSON.parse(last_url);
-        getContent({url:last_url_object.url,method:last_url_object.method,data:last_url_object.data,target:last_url_object.target});
-    }
-
-}
-
 document.addEventListener('submit', function (event) {
 
   const form = event.target;
@@ -76,8 +64,10 @@ async function getContent({ url, method = 'GET', data = null , target = null , h
 
     const cacheKey = `${method}:${url}:${JSON.stringify(data)}`;
 
-    let last_url = {url:url,method:method,target:target};
-    sessionStorage.setItem("last_url",JSON.stringify(last_url));
+    if(target == "content"){
+        let last_url = {url:url,method:method,target:target};
+        sessionStorage.setItem("last_url",JSON.stringify(last_url));
+    }
 
     try {
         const options = { method };
